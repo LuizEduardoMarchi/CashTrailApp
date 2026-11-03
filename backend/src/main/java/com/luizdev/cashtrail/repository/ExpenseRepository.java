@@ -11,10 +11,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class ExpenseRepository {
-    // Repository in memory, it's gonna be replaced by a database in the future.
+    // Repository in memory, it's going to be replaced by a database in the future.
     private final Map<Long, Expense> expenses = new LinkedHashMap<>();
 
-    // Last generated Id, starts with 0 and keep incrementing by 1.
+    // Last generated id, starts with 0 and keep incrementing by 1.
     private final AtomicLong lastId = new AtomicLong(0);
 
     public Expense save(Expense expense) {
@@ -25,7 +25,7 @@ public class ExpenseRepository {
             return expense;
         }
 
-        // Id was provided but doesn't exist in the repository
+        // id was provided but doesn't exist in the repository
         if(!expenses.containsKey(expense.getId())){
             throw new IllegalArgumentException("Cannot update: expense not found with id " + expense.getId());
         }
