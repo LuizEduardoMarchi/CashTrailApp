@@ -7,6 +7,7 @@ import com.luizdev.cashtrail.model.Expense;
 import com.luizdev.cashtrail.repository.CategoryRepository;
 import com.luizdev.cashtrail.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -14,7 +15,7 @@ public class ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final CategoryRepository categoryRepository;
 
-    public ExpenseService(ExpenseRepository expenseRepository, CategoryRepository categoryRepository){
+    public ExpenseService(ExpenseRepository expenseRepository, CategoryRepository categoryRepository) {
         this.expenseRepository = expenseRepository;
         this.categoryRepository = categoryRepository;
     }
@@ -46,6 +47,29 @@ public class ExpenseService {
     public ExpenseResponse findById(Long id) {
         return toResponse(expenseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Despesa não encontrada")));
+    }
+
+    // Update the existing entity (not a new one) so the id is preserved.
+    public ExpenseResponse update(Long id, ExpenseRequest request) {
+        Expense expense = expenseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Despesa não encontrada"));
+        categoryRepository.findById(request.categoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria não encontrada"));
+
+        expense.setDescription(request.description());
+        expense.setAmount(request.amount());
+        expense.setDate(request.date());
+        expense.setCategoryId(request.categoryId());
+
+        Expense savedExpense = expenseRepository.save(expense);
+
+        return toResponse(savedExpense);
+    }
+
+    public void delete(Long id) {
+        expenseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Despesa não encontrada"));
+        expenseRepository.deleteById(id);
     }
 
     private ExpenseResponse toResponse(Expense expense) {
